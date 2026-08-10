@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — AAPM SENAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* =====================================================
+           VARIÁVEIS E RESET
+        ===================================================== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:          #0f1117;
+            --surface:     #181c27;
+            --surface-2:   #1e2333;
+            --border:      #2a2f42;
+            --accent:      #3b82f6;
+            --accent-dim:  #1d3a6e;
+            --green:       #22c55e;
+            --green-dim:   #14532d;
+            --amber:       #f59e0b;
+            --amber-dim:   #78350f;
+            --red:         #ef4444;
+            --red-dim:     #7f1d1d;
+            --text:        #e2e8f0;
+            --text-muted:  #64748b;
+            --text-dim:    #94a3b8;
+            --font-head:   'Syne', sans-serif;
+            --font-body:   'DM Sans', sans-serif;
+            --radius:      12px;
+            --radius-sm:   8px;
+        }
+
+        html, body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            font-size: 15px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        a { color: inherit; text-decoration: none; }
+
+        /* =====================================================
+           LAYOUT PRINCIPAL
+        ===================================================== */
+        .layout {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            min-height: 100vh;
+        }
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+        .sidebar {
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 28px 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-logo {
+            padding: 0 24px 28px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-logo .logo-tag {
+            font-size: 10px;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            font-family: var(--font-head);
+            font-weight: 600;
+        }
+
+        .sidebar-logo .logo-name {
+            font-family: var(--font-head);
+            font-weight: 800;
+            font-size: 1.4rem;
+            line-height: 1.1;
+            color: var(--text);
+            margin-top: 4px;
+        }
+
+        .sidebar-logo .logo-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .sidebar-nav {
+            padding: 20px 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .nav-section {
+            font-size: 10px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-family: var(--font-head);
+            padding: 12px 12px 6px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: var(--radius-sm);
+            color: var(--text-dim);
+            font-size: 14px;
+            font-weight: 400;
+            transition: background .15s, color .15s;
+        }
+
+        .nav-link:hover {
+            background: var(--surface-2);
+            color: var(--text);
+        }
+
+        .nav-link.active {
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .nav-link .icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer {
+            padding: 16px 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--surface-2);
+            border-radius: var(--radius-sm);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-dim);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .user-info .user-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
+
+        .user-info .user-role {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .logout-btn {
+            margin-top: 8px;
+            display: block;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            padding: 6px;
+            border-radius: var(--radius-sm);
+            transition: background .15s, color .15s;
+        }
+
+        .logout-btn:hover {
+            background: var(--red-dim);
+            color: var(--red);
+        }
+
+        /* =====================================================
+           CONTEÚDO PRINCIPAL
+        ===================================================== */
+        .main {
+            padding: 36px 40px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header .greeting {
+            font-size: 12px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-family: var(--font-head);
+        }
+
+        .page-header h1 {
+            font-family: var(--font-head);
+            font-weight: 800;
+            font-size: 2rem;
+            color: var(--text);
+            line-height: 1.1;
+            margin-top: 4px;
+        }
+
+        /* =====================================================
+           CARDS DE RESUMO
+        ===================================================== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color .2s, transform .15s;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        /* Barra colorida no topo do card */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .card.blue::before   { background: var(--accent); }
+        .card.green::before  { background: var(--green); }
+        .card.amber::before  { background: var(--amber); }
+        .card.red::before    { background: var(--red); }
+
+        .card-icon {
+            font-size: 22px;
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .card-value {
+            font-family: var(--font-head);
+            font-weight: 800;
+            font-size: 2.4rem;
+            line-height: 1;
+            color: var(--text);
+        }
+
+        .card-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .card-link {
+            font-size: 12px;
+            color: var(--accent);
+            margin-top: 12px;
+            display: inline-block;
+            transition: opacity .15s;
+        }
+
+        .card-link:hover { opacity: .7; }
+
+        /* =====================================================
+           GRID DE SEÇÕES INFERIORES
+        ===================================================== */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+        }
+
+        /* =====================================================
+           TABELAS
+        ===================================================== */
+        .section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-title {
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text);
+        }
+
+        .section-link {
+            font-size: 12px;
+            color: var(--accent);
+        }
+
+        .section-link:hover { opacity: .7; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            font-size: 11px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 10px 22px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 500;
+        }
+
+        td {
+            padding: 13px 22px;
+            font-size: 14px;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        tr:hover td { background: var(--surface-2); }
+
+        .td-name {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        /* =====================================================
+           BADGES
+        ===================================================== */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .04em;
+        }
+
+        .badge-green  { background: var(--green-dim);  color: var(--green); }
+        .badge-red    { background: var(--red-dim);    color: var(--red); }
+        .badge-amber  { background: var(--amber-dim);  color: var(--amber); }
+        .badge-blue   { background: var(--accent-dim); color: var(--accent); }
+
+        /* =====================================================
+           LISTA DE ESTOQUE BAIXO
+        ===================================================== */
+        .stock-list { padding: 8px 0; }
+
+        .stock-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 22px;
+            border-bottom: 1px solid var(--border);
+            transition: background .15s;
+        }
+
+        .stock-item:last-child  { border-bottom: none; }
+        .stock-item:hover       { background: var(--surface-2); }
+
+        .stock-item-name {
+            font-size: 13px;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .stock-item-qty {
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--amber);
+        }
+
+        .empty-state {
+            padding: 32px 22px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .empty-icon { font-size: 28px; margin-bottom: 8px; }
+
+        /* =====================================================
+           BARRA DE PROGRESSO ARMÁRIOS
+        ===================================================== */
+        .progress-wrap {
+            padding: 20px 22px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--surface-2);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--amber);
+            border-radius: 999px;
+            transition: width .6s ease;
+        }
+
+        .progress-fill.green { background: var(--green); }
+
+        .armarios-detail {
+            display: flex;
+            gap: 12px;
+            padding: 14px 22px 20px;
+        }
+
+        .armario-stat {
+            flex: 1;
+            background: var(--surface-2);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            text-align: center;
+        }
+
+        .armario-stat-value {
+            font-family: var(--font-head);
+            font-weight: 800;
+            font-size: 1.6rem;
+            color: var(--text);
+        }
+
+        .armario-stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* =====================================================
+           ANIMAÇÃO DE ENTRADA
+        ===================================================== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(16px);
+            animation: fadeUp .4s ease forwards;
+        }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in:nth-child(1) { animation-delay: .05s; }
+        .fade-in:nth-child(2) { animation-delay: .10s; }
+        .fade-in:nth-child(3) { animation-delay: .15s; }
+        .fade-in:nth-child(4) { animation-delay: .20s; }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- =====================================================
+         SIDEBAR
+    ===================================================== -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-tag">Sistema</div>
+            <div class="logo-name">AAPM</div>
+            <div class="logo-sub">SENAI — Gestão de Loja</div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">Principal</div>
+
+            <a href="/dashboard" class="nav-link active">
+                <span class="icon">⊞</span> Dashboard
+            </a>
+            <a href="/produtos" class="nav-link">
+                <span class="icon">📦</span> Produtos
+            </a>
+            <a href="/categorias" class="nav-link">
+                <span class="icon">🏷</span> Categorias
+            </a>
+            <a href="/movimentacoes" class="nav-link">
+                <span class="icon">↕</span> Movimentações
+            </a>
+            <a href="/armarios" class="nav-link">
+                <span class="icon">🔒</span> Armários
+            </a>
+
+            {% if usuario.role == 'admin' %}
+            <div class="nav-section">Administração</div>
+            <a href="/usuarios" class="nav-link">
+                <span class="icon">👥</span> Usuários
+            </a>
+            {% endif %}
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <!--
+                    Inicial do nome como avatar —
+                    usuario.nome vem do payload JWT
+                -->
+                <div class="user-avatar">
+                    {{ usuario.nome[0].upper() }}
+                </div>
+                <div class="user-info">
+                    <div class="user-name">{{ usuario.nome }}</div>
+                    <div class="user-role">{{ usuario.role }}</div>
+                </div>
+            </div>
+            <a href="/auth/logout" class="logout-btn">← Sair</a>
+        </div>
+    </aside>
+
+    <!-- =====================================================
+         CONTEÚDO
+    ===================================================== -->
+    <main class="main">
+
+        <div class="page-header">
+            <div class="greeting">Bem-vindo de volta</div>
+            <h1>{{ usuario.nome.split()[0] }}</h1>
+        </div>
+
+        <!-- CARDS DE RESUMO -->
+        <div class="cards-grid">
+
+            <a href="/produtos" class="card blue fade-in">
+                <span class="card-icon">📦</span>
+                <div class="card-value">{{ total_produtos }}</div>
+                <div class="card-label">Produtos ativos</div>
+                <div class="card-link">Ver todos →</div>
+            </a>
+
+            <a href="/categorias" class="card green fade-in">
+                <span class="card-icon">🏷</span>
+                <div class="card-value">{{ total_categorias }}</div>
+                <div class="card-label">Categorias</div>
+                <div class="card-link">Gerenciar →</div>
+            </a>
+
+            <a href="/armarios?status=disponivel" class="card
+                {% if armarios_disponiveis == 0 %}amber{% else %}green{% endif %} fade-in">
+                <span class="card-icon">🔓</span>
+                <div class="card-value">{{ armarios_disponiveis }}</div>
+                <div class="card-label">Armários disponíveis</div>
+                <div class="card-link">Ver mapa →</div>
+            </a>
+
+            <a href="/produtos?estoque_baixo=true" class="card
+                {% if estoque_baixo %}red{% else %}green{% endif %} fade-in">
+                <span class="card-icon">⚠</span>
+                <div class="card-value">{{ estoque_baixo | length }}</div>
+                <div class="card-label">Estoque baixo</div>
+                <div class="card-link">Ver produtos →</div>
+            </a>
+
+        </div>
+
+        <!-- GRID INFERIOR -->
+        <div class="bottom-grid">
+
+            <!-- Movimentações recentes -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-title">Movimentações recentes</span>
+                    <a href="/movimentacoes" class="section-link">Ver todas →</a>
+                </div>
+
+                {% if movimentacoes_recentes %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Tipo</th>
+                            <th>Qtd</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in movimentacoes_recentes %}
+                        <tr>
+                            <td>
+                                <a href="/produtos/{{ m.produto_id }}"
+                                   class="td-name">
+                                    {{ m.produto.nome }}
+                                </a>
+                            </td>
+                            <td>
+                                {% if m.tipo.value == 'entrada' %}
+                                    <span class="badge badge-green">▲ Entrada</span>
+                                {% else %}
+                                    <span class="badge badge-red">▼ Saída</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ m.quantidade }}</td>
+                            <td>{{ m.criado_em.strftime('%d/%m %H:%M') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">↕</div>
+                    Nenhuma movimentação registrada ainda.
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Coluna direita -->
+            <div style="display:flex; flex-direction:column; gap:20px;">
+
+                <!-- Estoque baixo -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">⚠ Estoque baixo</span>
+                        {% if estoque_baixo %}
+                        <a href="/produtos?estoque_baixo=true" class="section-link">
+                            Ver todos →
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    {% if estoque_baixo %}
+                    <div class="stock-list">
+                        {% for p in estoque_baixo[:5] %}
+                        <a href="/produtos/{{ p.id }}" class="stock-item">
+                            <div class="stock-item-name">{{ p.nome }}</div>
+                            <div class="stock-item-qty">{{ p.estoque_atual }}</div>
+                        </a>
+                        {% endfor %}
+                    </div>
+
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">✓</div>
+                        Todos os estoques estão OK.
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Ocupação de armários -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">🔒 Armários</span>
+                        <a href="/armarios" class="section-link">Ver mapa →</a>
+                    </div>
+
+                    {% if total_armarios > 0 %}
+                    <div class="progress-wrap">
+                        <div class="progress-label">
+                            <span>Ocupação</span>
+                            <!--
+                                Calcula a porcentagem de armários alugados.
+                                O filtro "round" do Jinja2 arredonda o valor.
+                            -->
+                            <span>
+                                {{ ((armarios_alugados / total_armarios) * 100) | round(0) | int }}%
+                            </span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill"
+                                 style="width: {{ ((armarios_alugados / total_armarios) * 100) | round(0) | int }}%">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="armarios-detail">
+                        <div class="armario-stat">
+                            <div class="armario-stat-value"
+                                 style="color: var(--green)">
+                                {{ armarios_disponiveis }}
+                            </div>
+                            <div class="armario-stat-label">Disponíveis</div>
+                        </div>
+                        <div class="armario-stat">
+                            <div class="armario-stat-value"
+                                 style="color: var(--amber)">
+                                {{ armarios_alugados }}
+                            </div>
+                            <div class="armario-stat-label">Alugados</div>
+                        </div>
+                        <div class="armario-stat">
+                            <div class="armario-stat-value">{{ total_armarios }}</div>
+                            <div class="armario-stat-label">Total</div>
+                        </div>
+                    </div>
+
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">🔒</div>
+                        Nenhum armário cadastrado.
+                        {% if usuario.role == 'admin' %}
+                        <br>
+                        <a href="/armarios/novo"
+                           style="color: var(--accent); margin-top: 8px; display:inline-block">
+                            Cadastrar agora →
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login — Estoque</title>
+</head>
+<body>
+    <h1>Entrar no sistema</h1>
+
+    <!-- Exibe mensagem de erro se existir -->
+    {% if erro %}
+        <p style="color: red;">{{ erro }}</p>
+    {% endif %}
+
+    <!-- Exibe confirmação após registro -->
+    {% if request.query_params.get('cadastro') == 'ok' %}
+        <p style="color: green;">Cadastro realizado! Faça login.</p>
+    {% endif %}
+
+    <!--
+        action="/auth/login" → envia para nosso endpoint POST
+        method="post"        → dados no corpo da requisição (não na URL)
+    -->
+    <form action="/auth/login" method="post">
+        <label>E-mail:
+            <input type="email" name="email" required>
+        </label>
+        <br>
+        <label>Senha:
+            <input type="password" name="senha" required>
+        </label>
+        <br>
+        <button type="submit">Entrar</button>
+    </form>
+
+    <p>Não tem conta? <a href="/auth/register">Cadastre-se</a></p>
+</body>
+</html>
